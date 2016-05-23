@@ -17,13 +17,13 @@ server {
     ssl_certificate /ssl/nubiot.com.crt;
     ssl_certificate_key /ssl/nubiot.com.key;
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+    
+    location /api {
+        proxy_pass http://{{printf $app}};
+    }
 
     location / {
         root /landing;  
-    }
-
-    location /api/ {
-        proxy_pass http://{{printf $app}};
     }
 }
 
