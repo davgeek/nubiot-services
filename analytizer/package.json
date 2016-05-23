@@ -1,0 +1,15 @@
+{
+  "name": "analitizer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "analytizer.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "David Lizarraga",
+  "license": "ISC",
+  "dependencies": {
+    "influx": "^4.2.0",
+    "seneca": "^2.1.0"
+  }
+}

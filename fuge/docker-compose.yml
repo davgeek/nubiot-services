@@ -1,0 +1,61 @@
+version: '2'
+
+services:
+  influx:
+    image: tutum/influxdb
+    container_name: influx
+    ports:
+      - 8086:8086
+      - 8083:8083
+    volumes:
+      - influx-data:/data
+
+  serializer:
+    build: ../serializer/
+    container_name: serializer
+    ports:
+      - "10001"
+    environment:
+      - SERIALIZER_PORT=10001
+      - INFLUX_IP=influx
+    depends_on:
+      - influx
+
+  broker:
+    build: ../broker/
+    container_name: broker
+    ports:
+        - 10002:10002
+        - 1883:1883
+        - 8883:8883
+    environment:
+      - SERIALIZER_PORT=10001
+      - SERIALIZER_IP=serializer
+
+  actuator:
+    build: ../actuator/
+    container_name: actuator
+    ports:
+      - "10000"
+    environment:
+      - ACTUATOR_PORT=10000
+      - BROKER_IP=broker
+    depends_on:
+      - broker
+
+  control:
+    build: ../control-api/
+    ports:
+      - "4000"
+    environment:
+      - CONTROL_PORT=4000
+      - ACTUATOR_IP=actuator
+      - ACTUATOR_PORT=10000
+    depends_on:
+      - actuator
+
+volumes:
+  redis-data:
+    driver: local
+  influx-data:
+    driver: local

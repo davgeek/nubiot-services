@@ -1,0 +1,14 @@
+serializer:
+  build: ../serializer/
+  container_name: serializer
+broker:
+  build: ../broker/
+  container_name: broker
+actuator:
+  build: ../actuator/
+  container_name: actuator
+control:
+  build: ../control-api/
+  container_name: control
+
+
