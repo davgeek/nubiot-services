@@ -9,7 +9,7 @@ ADD files/default.ctmpl /templates/default.ctmpl
 
 ADD files/nubiot.com.crt /ssl/nubiot.com.crt
 ADD files/nubiot.com.key /ssl/nubiot.com.key
-ADD files/landing/*	/landing/*
+ADD files/landing/	/landing/
 
 ADD https://releases.hashicorp.com/consul-template/0.12.2/consul-template_0.12.2_linux_amd64.zip /usr/bin/
 RUN unzip /usr/bin/consul-template_0.12.2_linux_amd64.zip -d /usr/local/bin
