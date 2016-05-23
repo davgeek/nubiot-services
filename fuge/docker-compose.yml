@@ -44,7 +44,7 @@ services:
       - broker
 
   control:
-    build: ../control-api/
+    build: ../control/
     ports:
       - "4000"
     environment:

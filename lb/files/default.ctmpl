@@ -1,0 +1,34 @@
+{{$app := env "APP_NAME"}}
+
+upstream {{printf $app}} {
+    least_conn;
+    {{range service $app}}
+    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+}
+
+server {
+    listen 443;
+    server_name nubiot.com;
+
+    ssl on;
+    ssl_certificate /ssl/nubiot.com.crt;
+    ssl_certificate_key /ssl/nubiot.com.key;
+
+    # side note: only use TLS since SSLv2 and SSLv3 have had recent vulnerabilities
+    ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
+
+    location /api {
+        proxy_pass http://{{printf $app}};
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 80;
+    server_name nubiot.com;
+    rewrite ^https://$server_name$request_uri? permanent;
+}
