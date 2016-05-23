@@ -1,9 +1,7 @@
-{{$app := env "APP_NAME"}}
-
-upstream {{printf $app}} {
-    least_conn;
-    {{range service $app}}
-    server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;{{end}}
+upstream control {
+  least_conn;
+  {{range service "nubiot-services"}}server {{.Address}}:{{.Port}} max_fails=3 fail_timeout=60 weight=1;
+  {{else}}server 127.0.0.1:65535;{{end}}
 }
 
 server {
@@ -17,7 +15,25 @@ server {
     # side note: only use TLS since SSLv2 and SSLv3 have had recent vulnerabilities
     ssl_protocols TLSv1 TLSv1.1 TLSv1.2;
 
-    location / {
-        proxy_pass http://{{printf $app}};
+    charset utf-8;
+
+    ocation ~ / {
+        proxy_pass http://control/$1$is_args$args;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
     }
+
+    location ~ ^/api/(.\*)$ {
+        proxy_pass http://control/$1$is_args$args;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
+
+server {
+    listen 80;
+    server_name nubiot.com;
+    rewrite ^https://$server_name$request_uri? permanent;
 }
