@@ -1,6 +1,0 @@
-PROXY_HOST=192.168.99.100
-serializer_PORT=10000
-broker_PORT=10001
-actuator_PORT=10002
-control_PORT=10003
-
